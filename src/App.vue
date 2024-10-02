@@ -17,21 +17,42 @@ items.value.push({id: items.value.length+1, label: newItem.value});
 //clear the input
 newItem.value="";
 };
+//formulario
 const newItem= ref("");
 const newItemHighPriority = ref(false);
+const editing= ref(true);
+const activateEdition=(activate)=>{
+  editing.value= activate;
 
+}
 
 </script>
 //metodos
 <template>
-<h1>
-<i class="material-icons shopping-cart-icon"> local_mall</i>
-{{ header }}
+<div class="header">
+
+  <h1>
+  <i 
+  class="material-icons shopping-cart-icon">
+   local_mall</i>
+   {{ header }}
 </h1>
+<button v-if="editing" class="btn" 
+@click="activateEdition(false)">
+Cancelar
+</button>
+<button v-else class="btn btn-primary"
+ @click="activateEdition(true)" >
+ Agregar Articulo
+</button>
+</div>
+
 <!--Agregando entradas de usuario-->
 <form
 class="add-item form"
-v-on:submit.prevent="saveItem()">
+v-if="editing"
+v-on:submit.prevent="saveItem">
+
 <!--Entrada de Texto-->
 <input 
 type="text"
@@ -51,6 +72,7 @@ Salvar Articulo
 <ul>
  <li v-for="item in items" :key="item.id"> 🍻{{ item.label }}</li>
 </ul>
+<p v-if="items.length === 0">🥀NO HAY ELEMENTOS EN LA LISTA🥀</p>
   </template>
 <style scoped>
 .shopping-cart-icon{
