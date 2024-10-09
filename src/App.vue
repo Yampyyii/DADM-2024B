@@ -6,10 +6,10 @@ const header = ref ('App lista de compras');
 //items
 //items model
 const items = ref([
-  {id:'0', label:'10 bolillos'},
-  {id:'1', label:'1 lata de frijoles'},
-  {id:'2', label:'1 Chela'},
-  {id:'3', label:'1 Nutella'},
+  {id:'0', label:'10 bolillos', purchased: true, priority:true},
+  {id:'1', label:'1 lata de frijoles', purchased: false},
+  {id:'2', label:'1 Chela', purchased: false},
+  {id:'3', label:'1 Nutella', purchased: false},
 ]);
 //item-method
 const saveItem = ()=> {
@@ -71,7 +71,13 @@ Salvar Articulo
 
   <!--Lista-->
 <ul>
- <li v-for="item in items" :key="item.id"> 🍻{{ item.label }}</li>
+ <li
+  v-for="{label, id, purchased, priority} in items" 
+  :key="id"
+  class="amazing"
+  :class="{ strikeout: purchased, priority: priority}">
+ {{priority ? "🍻": "🥵"}}{{ label }}
+</li>
 </ul>
 <p v-if="items.length === 0">🥀NO HAY ELEMENTOS EN LA LISTA🥀</p>
   </template>
