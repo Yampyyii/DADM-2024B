@@ -62,6 +62,7 @@ v-model.trim="newItem">
 <label><input type="checkbox" v-model="newItemHighPriority">Alta prioridad</label>
 <!--boton-->
 <button
+:disabled="newItem.length===0"
 class="btn btn-primary">
 Salvar Articulo
 </button>
