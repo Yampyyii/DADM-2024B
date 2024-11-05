@@ -1,100 +1,114 @@
 <script setup>
-import { ref } from 'vue';
-//modelo
-const header = ref ('App lista de compras');
-
-//items
-//items model
+// Importando funcion
+// para crear referencias reactivas
+import { ref, computed } from 'vue'
+// Creando una referencia reactiva
+// de tipo string
+const header = ref('App lista de compras');
+const shoppingIcon = ref('material-icons shopping-cart-icon');
+// Creando una referencia reactiva
+// para alamacenar el valor de la lista
 const items = ref([
-  {id:'0', label:'10 bolillos', purchased: true, priority:true},
-  {id:'1', label:'1 lata de frijoles', purchased: false},
-  {id:'3', label:'2 lata de atún', purchased: true},
+   { id: 0, label: '2 lata de atún', purchased: false, highPriority: true },
+   { id: 1, label: '1 lata de frijoles', purchased: false, highPriority: false },
+  { id: 2, label: '10 bolillos', purchased: true, highPriority: false },
+
 ]);
-//item-method
-const saveItem = ()=> {
-items.value.push({id: items.value.length+1, label: newItem.value});
-//clear the input
-newItem.value="";
+const reversedItems = computed(()=>{
+  // Regresar una version invertida
+  // del arreglo "items"
+  return [...items.value].reverse();
+});
+const togglePurchased = (item) => {
+  item.purchased = !item.purchased
 };
-//formulario
-const newItem= ref("");
-const newItemHighPriority = ref(false);
-const editing= ref(true);
-const activateEdition=(activate)=>{
-  editing.value= activate;
-
+const newItem = ref('');
+// Creando Propiedad Computada
+const characterCount = computed(()=>{
+  return newItem.value.length;
+});
+const newItemHighPriority = ref(false)
+// Metodos
+const saveItems = () => {
+  // Agrega un nuevo elemento a la lista
+  // proveniente de la caja de texto
+  items.value.push(
+    { id: items.value.length, 
+      label: newItem.value,
+      highPriority: newItemHighPriority.value
+    })
+  // Borramos el contenido de la caja de texto
+  newItem.value = "";
+  newItemHighPriority.value = false;
+};
+const doEdit = (edit) => {
+  editing.value = edit;
+  newItem.value = "";
+  newItemHighPriority.value = false;
 }
-
+const editing = ref(false);
 </script>
-//metodos
+
 <template>
-<div class="header">
-
-  <h1>
-  <i 
-  class="material-icons shopping-cart-icon">
-   local_mall</i>
-   {{ header }}
-</h1>
-<button v-if="editing" class="btn" 
-@click="activateEdition(false)">
-Cancelar
-</button>
-<button v-else class="btn btn-primary"
- @click="activateEdition(true)" >
- Agregar Articulo
-</button>
-</div>
-
-<!--Agregando entradas de usuario-->
-<form
-class="add-item form"
-v-if="editing"
-v-on:submit.prevent="saveItem">
-
-<!--Entrada de Texto-->
-<input 
-type="text"
-placeholder="Add Item"
-v-model.trim="newItem">
-<!--Radio buttons-->
-<label><input type="checkbox" v-model="newItemHighPriority">Alta prioridad</label>
-<!--boton-->
-<button
-:disabled="newItem.length===0"
-class="btn btn-primary">
-Salvar Articulo
-</button>
-
-</form>
-
-  <!--Lista clases con objetos-->
-<ul>
- <li
-  v-for="{label, id, purchased, priority} in items" 
-  v-bind:key="id"
-  :class="{ strikeout: purchased,priority}"
-  >
-  ⚜ {{ label }}
-</li>
-</ul>
-
-  <!--Lista clases con arreglos-->
+  <!-- Header -->
+  <div class="header">
+    <h1>
+      <i :class="shoppingIcon">local_mall</i> {{ header }}
+    </h1>
+    <button 
+      v-on:click="doEdit(false)"
+      v-if="editing" 
+      class="btn">
+      Cancelar
+    </button>
+    <button 
+      v-else
+      v-on:click="doEdit(true)" 
+      class="btn btn-primary">
+      Agregar Articulo
+    </button>
+  </div>
+  <!-- Formulario -->
+  <form v-if="editing" v-on:submit.prevent="saveItems" class="add-item form">
+    <input v-model="newItem" type="text" placeholder="Agregar articulo">
+    <!-- Checkbox -->
+    <label>
+      <input type="checkbox" v-model="newItemHighPriority">
+      Alta Prioridad
+    </label>
+    <!-- Boton -->
+    <button class="btn btn-primary">
+      Agregar Articulo
+    </button>
+    <p class="counter">
+      {{ characterCount }} / 200
+    </p>
+  </form>
+  <!-- Entrega de lista -->
   <ul>
- <li
-  v-for="{label, id, purchased, priority} in items" 
-  :key="id"
-  :class="[purchased ? 'strikeout' : '', priority ? 'priority' : '' ]"
-  >
- {{priority ? "🍻": "🥵"}}{{ label }}
-</li>
-</ul>
+    <li
+      v-for="({ id, label, purchased, highPriority }, index) in reversedItems"
+      @click="togglePurchased(reversedItems[index])"
+      :class="{priority: highPriority, strikeout:purchased}"
+      v-bind:key="id">
+      ⭐ {{ label }}
+    </li>
+  </ul>
+  <!-- <ul>
+    <li 
+      v-for="{ id, label, purchased, highPriority } in items"
+      :class="[purchased ? 'strikeout' : '', highPriority ? 'priority' :'']"
+      v-bind:key="id">
+      ⭐ {{ label }}
+    </li>
+  </ul> -->
+  <!-- Mensaje condicional -->
+  <p v-if="items.length === 0">🥀 No hay elementos en la lista 🥀</p>
+</template>
 
-<p v-if="items.length === 0">🥀NO HAY ELEMENTOS EN LA LISTA🥀</p>
-  </template>
 <style scoped>
-.shopping-cart-icon{
-font-size: 2rem;
+.shopping-cart-icon {
+  font-size: 2rem;
 }
 </style>
 
