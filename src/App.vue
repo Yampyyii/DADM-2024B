@@ -8,8 +8,7 @@ const header = ref ('App lista de compras');
 const items = ref([
   {id:'0', label:'10 bolillos', purchased: true, priority:true},
   {id:'1', label:'1 lata de frijoles', purchased: false},
-  {id:'2', label:'1 Chela', purchased: false},
-  {id:'3', label:'1 Nutella', purchased: false},
+  {id:'3', label:'2 lata de atún', purchased: true},
 ]);
 //item-method
 const saveItem = ()=> {
@@ -73,11 +72,10 @@ Salvar Articulo
 <ul>
  <li
   v-for="{label, id, purchased, priority} in items" 
-  :key="id"
-  class="amazing"
-  :class="{ strikeout: purchased, priority: priority}"
+  v-bind:key="id"
+  :class="{ strikeout: purchased,priority}"
   >
- {{priority ? "🍻": "🥵"}}{{ label }}
+  ⚜ {{ label }}
 </li>
 </ul>
 
