@@ -12,6 +12,7 @@ const items = ref([
    { id: 0, label: '2 lata de atún', purchased: false, highPriority: true },
    { id: 1, label: '1 lata de frijoles', purchased: false, highPriority: false },
   { id: 2, label: '10 bolillos', purchased: true, highPriority: false },
+  { id: 2, label: '10 bolillos', purchased: true, highPriority: true },
 
 ]);
 const reversedItems = computed(()=>{
