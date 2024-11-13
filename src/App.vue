@@ -1,47 +1,115 @@
 <script setup>
-import HelloWorld from './components/HelloWorld.vue'
-import TheWelcome from './components/TheWelcome.vue'
+// Importando funcion
+// para crear referencias reactivas
+import { ref, computed } from 'vue'
+// Creando una referencia reactiva
+// de tipo string
+const header = ref('App lista de compras');
+const shoppingIcon = ref('material-icons shopping-cart-icon');
+// Creando una referencia reactiva
+// para alamacenar el valor de la lista
+const items = ref([
+   { id: 0, label: '2 lata de atún', purchased: false, highPriority: true },
+   { id: 1, label: '1 lata de frijoles', purchased: false, highPriority: false },
+  { id: 2, label: '10 bolillos', purchased: true, highPriority: false },
+  { id: 2, label: '10 bolillos', purchased: true, highPriority: true },
+
+]);
+const reversedItems = computed(()=>{
+  // Regresar una version invertida
+  // del arreglo "items"
+  return [...items.value].reverse();
+});
+const togglePurchased = (item) => {
+  item.purchased = !item.purchased
+};
+const newItem = ref('');
+// Creando Propiedad Computada
+const characterCount = computed(()=>{
+  return newItem.value.length;
+});
+const newItemHighPriority = ref(false)
+// Metodos
+const saveItems = () => {
+  // Agrega un nuevo elemento a la lista
+  // proveniente de la caja de texto
+  items.value.push(
+    { id: items.value.length, 
+      label: newItem.value,
+      highPriority: newItemHighPriority.value
+    })
+  // Borramos el contenido de la caja de texto
+  newItem.value = "";
+  newItemHighPriority.value = false;
+};
+const doEdit = (edit) => {
+  editing.value = edit;
+  newItem.value = "";
+  newItemHighPriority.value = false;
+}
+const editing = ref(false);
 </script>
 
 <template>
-  <header>
-    <img alt="Vue logo" class="logo" src="./assets/logo.svg" width="125" height="125" />
-
-    <div class="wrapper">
-      <HelloWorld msg="You did it!" />
-    </div>
-  </header>
-
-  <main>
-    <TheWelcome />
-  </main>
+  <!-- Header -->
+  <div class="header">
+    <h1>
+      <i :class="shoppingIcon">local_mall</i> {{ header }}
+    </h1>
+    <button 
+      v-on:click="doEdit(false)"
+      v-if="editing" 
+      class="btn">
+      Cancelar
+    </button>
+    <button 
+      v-else
+      v-on:click="doEdit(true)" 
+      class="btn btn-primary">
+      Agregar Articulo
+    </button>
+  </div>
+  <!-- Formulario -->
+  <form v-if="editing" v-on:submit.prevent="saveItems" class="add-item form">
+    <input v-model="newItem" type="text" placeholder="Agregar articulo">
+    <!-- Checkbox -->
+    <label>
+      <input type="checkbox" v-model="newItemHighPriority">
+      Alta Prioridad
+    </label>
+    <!-- Boton -->
+    <button class="btn btn-primary">
+      Agregar Articulo
+    </button>
+    <p class="counter">
+      {{ characterCount }} / 200
+    </p>
+  </form>
+  <!-- Entrega de lista -->
+  <ul>
+    <li
+      v-for="({ id, label, purchased, highPriority }, index) in reversedItems"
+      @click="togglePurchased(reversedItems[index])"
+      :class="{priority: highPriority, strikeout:purchased}"
+      v-bind:key="id">
+      ⭐ {{ label }}
+    </li>
+  </ul>
+  <!-- <ul>
+    <li 
+      v-for="{ id, label, purchased, highPriority } in items"
+      :class="[purchased ? 'strikeout' : '', highPriority ? 'priority' :'']"
+      v-bind:key="id">
+      ⭐ {{ label }}
+    </li>
+  </ul> -->
+  <!-- Mensaje condicional -->
+  <p v-if="items.length === 0">🥀 No hay elementos en la lista 🥀</p>
 </template>
 
 <style scoped>
-header {
-  line-height: 1.5;
-}
-
-.logo {
-  display: block;
-  margin: 0 auto 2rem;
-}
-
-@media (min-width: 1024px) {
-  header {
-    display: flex;
-    place-items: center;
-    padding-right: calc(var(--section-gap) / 2);
-  }
-
-  .logo {
-    margin: 0 2rem 0 0;
-  }
-
-  header .wrapper {
-    display: flex;
-    place-items: flex-start;
-    flex-wrap: wrap;
-  }
+.shopping-cart-icon {
+  font-size: 2rem;
 }
 </style>
+
